@@ -34,10 +34,16 @@ void onPortChanged(Port port)
 
 ## Why?
 
-[Unity's experimental GraphView package was originally built for Unity's Shader Graph and Visual Effect Graph](https://forum.unity.com/threads/graph-port-api-onconnect-disconnect-are-internal.1315425/#post-8321505). As a consequence, the public API is tailored to what was needed for these packages. Many useful parts of the API are marked with `internal` access.
+The existing process of getting connection changes is overriding `GraphView.OnGraphViewChanged` to grab pending operations on the `GraphView`. Then, `GraphViewChange.edgesToCreate` is referenced to handle created edges, and `GraphViewChange.elementsToRemove` is filtered for elements of type `Edge` before being referenced to handle removed edges.
 
-This includes the internal `OnConnect` and `OnDisconnect` events on `GraphView.Port` 
+If the aim is to create a handler for connection changes, this is method is long-winded and breaks up logic in an unintuitive way.
 
-Thanks to this [workaround by adamgit](https://github.com/adamgit/PublishersFork/blob/main/EngineForks/WorkaroundUnityInternal.cs), we can expose internal engine functionality. Now there can be public methods to register callbacks to when the graph is changed.
+These extension methods streamline this logic by allowing connection changes to be handled by nodes or ports, rather than by the GraphView. This approach helps modularity and clear organization of code.
 
-In many situations, this is more desirable than overriding `GraphView.OnGraphViewChanged` as it often makes sense to have the event handler for port connection changes on the port itself.
+## How?
+
+[Unity's experimental GraphView package was originally built for Unity's Shader Graph and Visual Effect Graph](https://forum.unity.com/threads/graph-port-api-onconnect-disconnect-are-internal.1315425/#post-8321505). As a consequence, the public API is tailored to what was needed for these packages. Many useful parts of the API are marked `internal` and therefore inaccessible.
+
+This includes the internal `OnConnect` and `OnDisconnect` events on `GraphView.Port`
+
+Thanks to this [workaround by adamgit](https://github.com/adamgit/PublishersFork/blob/main/EngineForks/WorkaroundUnityInternal.cs), we can expose internal engine functionality and hook callbacks to these internal events.
