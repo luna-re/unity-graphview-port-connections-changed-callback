@@ -1,6 +1,6 @@
 # Connections Changed Callback for GraphView Ports
 
-Provides extension methods for Unity's experimental GraphView package, allowing callbacks to subscribe to when the connections on a `Port` are changed.
+Provides extension methods for Unity's [experimental GraphView package](https://docs.unity3d.com/2023.2/Documentation/ScriptReference/Experimental.GraphView.GraphView.html), allowing callbacks to subscribe to when the connections on a `Port` are changed.
 
 ## Requirements
 
@@ -9,7 +9,7 @@ Provides extension methods for Unity's experimental GraphView package, allowing 
 
 ## Usage
 
-Registered callbacks will be invoked when a connection is added or removed to the port.
+Registered callbacks will be invoked when a connection is added or removed on the port.
 
 ```cs
 // Register callback
@@ -20,11 +20,13 @@ port.UnregisterConnectionsChangedCallback(onPortChanged)
 ```
 
 ```cs
+// Example: Current port is an input port, and we
+// want to operate on all connected output nodes
 void onPortChanged(Port port)
 {
     var connections = port.connections;
     var connectedNodes = connections
-                .Select(edge => edge.output.node)
+                .Select(edge => edge.output.node);
     
     // Handle event here
 }
