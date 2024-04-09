@@ -4,7 +4,7 @@ Provides extension methods for Unity's experimental GraphView package, allowing 
 
 ## Requirements
 
-- [adamgit's workaround for accessing internal Unity classes](https://github.com/adamgit/PublishersFork/blob/main/EngineForks/WorkaroundUnityInternal.cs)
+- [adamgit's workaround for accessing internal Unity functionality](https://github.com/adamgit/PublishersFork/blob/main/EngineForks/WorkaroundUnityInternal.cs)
 
 
 ## Usage
