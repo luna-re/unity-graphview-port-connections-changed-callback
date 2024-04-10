@@ -32,18 +32,21 @@ void onPortChanged(Port port)
 }
 ```
 
-## Why?
+## Why use this method?
 
-The existing process of getting connection changes is overriding `GraphView.OnGraphViewChanged` to grab pending operations on the `GraphView`. Then, `GraphViewChange.edgesToCreate` is referenced to handle created edges, and `GraphViewChange.elementsToRemove` is filtered for elements of type `Edge` before being referenced to handle removed edges.
+These extension methods allow port connections to be handled by the port itself or by their containing nodes, rather than by the graph view. This streamlines the logic for creating connection handlers depending on the use case, and helps modularity and clear code organization.
 
-If the aim is to create a handler for connection changes, this is method is long-winded and breaks up logic in an unintuitive way.
+The existing `Port` API is lacking a way to hook events to port connections, and developers are expected to do this in the `GraphView`. Depending on the use case, this can be long-winded and split up logic in an unintuitive way. Ports actually already have `OnConnect` and `OnDisconnect` events, but are not publically accessible due to being marked `internal`.
 
-These extension methods streamline this logic by allowing connection changes to be handled by nodes or ports, rather than by the GraphView. This approach helps modularity and clear organization of code.
-
-## How?
-
-[Unity's experimental GraphView package was originally built for Unity's Shader Graph and Visual Effect Graph](https://forum.unity.com/threads/graph-port-api-onconnect-disconnect-are-internal.1315425/#post-8321505). As a consequence, the public API is tailored to what was needed for these packages. Many useful parts of the API are marked `internal` and therefore inaccessible.
-
-This includes the internal `OnConnect` and `OnDisconnect` events on `GraphView.Port`
+Due to the GraphView package being [originally built for Unity's Shader Graph and Visual Effect Graph](https://forum.unity.com/threads/graph-port-api-onconnect-disconnect-are-internal.1315425/#post-8321505), the publically accessible API is tailored to what was needed for these packages. As a result, many useful parts of the API are marked `internal` and therefore inaccessible.
 
 Thanks to this [workaround by adamgit](https://github.com/adamgit/PublishersFork/blob/main/EngineForks/WorkaroundUnityInternal.cs), we can expose internal engine functionality and hook callbacks to these internal events.
+
+## Preexisting method (Without using this repo)
+
+This section is for those who simply wish to create a port connection handler using the pre-existing GraphView API and have no interest in using the code in this repo:
+
+1. In your custom graph view class inheriting from `GraphView`, override `OnGraphViewChanged`. This will give access to pending operations on the graph view.
+2. Use `GraphViewChange.edgesToCreate` to reference newly created edges
+3. Use `GraphViewChange.elementsToRemove` to get all `GraphElements` about to be removed, then filter them by type `Edge` to get all edges about to be deleted.
+4. Write your custom logic
